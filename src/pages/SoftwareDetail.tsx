@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Search, RefreshCw, CheckCircle, XCircle, Clock, Play } from 'lucide-react';
+import { ArrowLeft, Search, RefreshCw, CheckCircle, XCircle, Clock, Play, Activity, BarChart3, Zap, Server } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -45,7 +45,7 @@ export const SoftwareDetail = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-2 py-1 rounded text-xs font-medium";
+    const baseClasses = "px-2 py-1 rounded text-xs font-medium flex items-center gap-1";
     switch (status) {
       case 'SUCCEED':
         return `${baseClasses} bg-green-100 text-green-800`;
@@ -61,7 +61,7 @@ export const SoftwareDetail = () => {
   };
 
   const getActionBadge = (action: string) => {
-    const baseClasses = "px-2 py-1 rounded text-xs font-medium";
+    const baseClasses = "px-2 py-1 rounded text-xs font-medium flex items-center gap-1";
     switch (action) {
       case 'install':
         return `${baseClasses} bg-green-100 text-green-800`;
@@ -74,6 +74,19 @@ export const SoftwareDetail = () => {
     }
   };
 
+  const getActionIcon = (action: string) => {
+    switch (action) {
+      case 'install':
+        return <Activity className="h-3 w-3" />;
+      case 'uninstall':
+        return <XCircle className="h-3 w-3" />;
+      case 'update':
+        return <RefreshCw className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
   // 統計數據
   const totalTasks = tasks.length;
   const successTasks = tasks.filter(t => t.taskStatus === 'SUCCEED').length;
@@ -81,21 +94,28 @@ export const SoftwareDetail = () => {
   const pendingTasks = tasks.filter(t => t.taskStatus === 'PENDING' || t.taskStatus === 'RUNNING').length;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* 標題和返回按鈕 */}
-        <div className="bg-white p-6 rounded-lg border">
+        <div className="bg-white p-6 rounded-lg border shadow-sm">
           <div className="flex items-center gap-4 mb-4">
             <Button 
               variant="outline" 
               size="icon"
               onClick={() => navigate('/')}
+              className="hover:bg-blue-50"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">軟體派送詳情</h1>
-              <p className="text-gray-600">查看軟體的派送任務狀態</p>
+            <div className="flex items-center gap-3">
+              <Zap className="h-8 w-8 text-blue-600" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">軟體派送詳情</h1>
+                <p className="text-gray-600 flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  查看軟體的派送任務狀態
+                </p>
+              </div>
             </div>
           </div>
 
@@ -112,6 +132,7 @@ export const SoftwareDetail = () => {
               />
             </div>
             <Button onClick={handleSearch} disabled={!searchId.trim()}>
+              <Search className="h-4 w-4 mr-2" />
               查詢
             </Button>
             <Button variant="outline" onClick={() => refetch()}>
@@ -124,16 +145,17 @@ export const SoftwareDetail = () => {
         {/* 統計卡片 */}
         {searchId && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card>
+            <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">總任務數</CardTitle>
+                <Activity className="h-4 w-4 text-blue-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalTasks}</div>
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">成功</CardTitle>
                 <CheckCircle className="h-4 w-4 text-green-600" />
@@ -143,7 +165,7 @@ export const SoftwareDetail = () => {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">失敗</CardTitle>
                 <XCircle className="h-4 w-4 text-red-600" />
@@ -153,7 +175,7 @@ export const SoftwareDetail = () => {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">進行中</CardTitle>
                 <Clock className="h-4 w-4 text-yellow-600" />
@@ -167,10 +189,14 @@ export const SoftwareDetail = () => {
 
         {/* 任務列表 */}
         {searchId && (
-          <div className="bg-white rounded-lg border">
+          <div className="bg-white rounded-lg border shadow-sm">
             <div className="p-6 border-b">
-              <h2 className="text-xl font-semibold">派送任務</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Server className="h-5 w-5 text-gray-600" />
+                <h2 className="text-xl font-semibold">派送任務</h2>
+              </div>
+              <p className="text-sm text-gray-600 flex items-center gap-2">
+                <Activity className="h-4 w-4" />
                 軟體ID: {searchId} | 共 {totalTasks} 個任務
               </p>
             </div>
@@ -198,29 +224,34 @@ export const SoftwareDetail = () => {
                 </TableHeader>
                 <TableBody>
                   {tasks.map((task) => (
-                    <TableRow key={task.taskId}>
+                    <TableRow key={task.taskId} className="hover:bg-gray-50">
                       <TableCell className="font-mono text-sm">
                         {task.taskId}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {task.hostname}
+                        <div className="flex items-center gap-2">
+                          <Server className="h-4 w-4 text-gray-400" />
+                          {task.hostname}
+                        </div>
                       </TableCell>
                       <TableCell>{task.owner}</TableCell>
                       <TableCell>
                         <span className={getActionBadge(task.action)}>
+                          {getActionIcon(task.action)}
                           {task.action}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <span className={getStatusBadge(task.taskStatus)}>
                           {getStatusIcon(task.taskStatus)}
-                          <span className={getStatusBadge(task.taskStatus)}>
-                            {task.taskStatus}
-                          </span>
-                        </div>
+                          {task.taskStatus}
+                        </span>
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">
-                        {task.updateDate}
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          {task.updateDate}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -238,7 +269,7 @@ export const SoftwareDetail = () => {
         )}
 
         {!searchId && (
-          <div className="bg-white rounded-lg border p-8 text-center text-gray-500">
+          <div className="bg-white rounded-lg border shadow-sm p-8 text-center text-gray-500">
             <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>請輸入軟體ID來查詢派送任務</p>
           </div>
