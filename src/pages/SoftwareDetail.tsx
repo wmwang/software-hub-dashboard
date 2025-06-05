@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -10,26 +9,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { softwareService } from '@/services/softwareService';
 import { DeploymentTask } from '@/types/software';
 import { DeploymentChart } from '@/components/software/DeploymentChart';
-
 export const SoftwareDetail = () => {
-  const { softwareId } = useParams<{ softwareId: string }>();
+  const {
+    softwareId
+  } = useParams<{
+    softwareId: string;
+  }>();
   const navigate = useNavigate();
   const [searchId, setSearchId] = useState(softwareId || '');
-
-  const { data: response, isLoading, error, refetch } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
     queryKey: ['deploymentTasks', searchId],
     queryFn: () => softwareService.getDeploymentTasks(searchId),
-    enabled: !!searchId,
+    enabled: !!searchId
   });
-
   const tasks = response?.data || [];
-
   const handleSearch = () => {
     if (searchId.trim()) {
       refetch();
     }
   };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'SUCCEED':
@@ -44,7 +47,6 @@ export const SoftwareDetail = () => {
         return null;
     }
   };
-
   const getStatusBadge = (status: string) => {
     const baseClasses = "px-2 py-1 rounded text-xs font-medium flex items-center gap-1";
     switch (status) {
@@ -60,7 +62,6 @@ export const SoftwareDetail = () => {
         return `${baseClasses} bg-gray-100 text-gray-800`;
     }
   };
-
   const getActionBadge = (action: string) => {
     const baseClasses = "px-2 py-1 rounded text-xs font-medium flex items-center gap-1";
     switch (action) {
@@ -74,7 +75,6 @@ export const SoftwareDetail = () => {
         return `${baseClasses} bg-gray-100 text-gray-800`;
     }
   };
-
   const getActionIcon = (action: string) => {
     switch (action) {
       case 'install':
@@ -93,19 +93,12 @@ export const SoftwareDetail = () => {
   const successTasks = tasks.filter(t => t.taskStatus === 'SUCCEED').length;
   const failedTasks = tasks.filter(t => t.taskStatus === 'FAILED').length;
   const pendingTasks = tasks.filter(t => t.taskStatus === 'PENDING' || t.taskStatus === 'RUNNING').length;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+  return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6 bg-lime-400">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* 標題和返回按鈕 */}
         <div className="bg-white p-6 rounded-lg border shadow-sm">
           <div className="flex items-center gap-4 mb-4">
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => navigate('/')}
-              className="hover:bg-blue-50"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/')} className="hover:bg-blue-50">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-3">
@@ -124,13 +117,7 @@ export const SoftwareDetail = () => {
           <div className="flex gap-4 max-w-md">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="輸入軟體ID查詢..."
-                value={searchId}
-                onChange={(e) => setSearchId(e.target.value)}
-                className="pl-10"
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
+              <Input placeholder="輸入軟體ID查詢..." value={searchId} onChange={e => setSearchId(e.target.value)} className="pl-10" onKeyDown={e => e.key === 'Enter' && handleSearch()} />
             </div>
             <Button onClick={handleSearch} disabled={!searchId.trim()}>
               <Search className="h-4 w-4 mr-2" />
@@ -144,8 +131,7 @@ export const SoftwareDetail = () => {
         </div>
 
         {/* 統計卡片 */}
-        {searchId && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {searchId && <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">總任務數</CardTitle>
@@ -185,23 +171,19 @@ export const SoftwareDetail = () => {
                 <div className="text-2xl font-bold text-yellow-600">{pendingTasks}</div>
               </CardContent>
             </Card>
-          </div>
-        )}
+          </div>}
 
         {/* 統計圖表 */}
-        {searchId && tasks.length > 0 && (
-          <div className="bg-white p-6 rounded-lg border shadow-sm">
+        {searchId && tasks.length > 0 && <div className="bg-white p-6 rounded-lg border shadow-sm">
             <div className="flex items-center gap-2 mb-6">
               <BarChart3 className="h-6 w-6 text-blue-600" />
               <h2 className="text-xl font-semibold">任務統計圖表</h2>
             </div>
             <DeploymentChart tasks={tasks} />
-          </div>
-        )}
+          </div>}
 
         {/* 任務列表 */}
-        {searchId && (
-          <div className="bg-white rounded-lg border shadow-sm">
+        {searchId && <div className="bg-white rounded-lg border shadow-sm">
             <div className="p-6 border-b">
               <div className="flex items-center gap-2 mb-2">
                 <Server className="h-5 w-5 text-gray-600" />
@@ -213,17 +195,12 @@ export const SoftwareDetail = () => {
               </p>
             </div>
 
-            {isLoading ? (
-              <div className="p-8 text-center">
+            {isLoading ? <div className="p-8 text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                 <p>載入中...</p>
-              </div>
-            ) : error ? (
-              <div className="p-8 text-center text-red-600">
+              </div> : error ? <div className="p-8 text-center text-red-600">
                 <p>載入失敗，請稍後再試</p>
-              </div>
-            ) : (
-              <Table>
+              </div> : <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>任務ID</TableHead>
@@ -235,8 +212,7 @@ export const SoftwareDetail = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tasks.map((task) => (
-                    <TableRow key={task.taskId} className="hover:bg-gray-50">
+                  {tasks.map(task => <TableRow key={task.taskId} className="hover:bg-gray-50">
                       <TableCell className="font-mono text-sm">
                         {task.taskId}
                       </TableCell>
@@ -265,28 +241,20 @@ export const SoftwareDetail = () => {
                           {task.updateDate}
                         </div>
                       </TableCell>
-                    </TableRow>
-                  ))}
+                    </TableRow>)}
                 </TableBody>
-              </Table>
-            )}
+              </Table>}
 
-            {tasks.length === 0 && !isLoading && searchId && (
-              <div className="p-8 text-center text-gray-500">
+            {tasks.length === 0 && !isLoading && searchId && <div className="p-8 text-center text-gray-500">
                 <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>沒有找到軟體 "{searchId}" 的派送任務</p>
-              </div>
-            )}
-          </div>
-        )}
+              </div>}
+          </div>}
 
-        {!searchId && (
-          <div className="bg-white rounded-lg border shadow-sm p-8 text-center text-gray-500">
+        {!searchId && <div className="bg-white rounded-lg border shadow-sm p-8 text-center text-gray-500">
             <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>請輸入軟體ID來查詢派送任務</p>
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
