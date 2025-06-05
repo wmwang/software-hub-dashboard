@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { softwareService } from '@/services/softwareService';
 import { DeploymentTask } from '@/types/software';
+import { DeploymentChart } from '@/components/software/DeploymentChart';
 
 export const SoftwareDetail = () => {
   const { softwareId } = useParams<{ softwareId: string }>();
@@ -184,6 +185,17 @@ export const SoftwareDetail = () => {
                 <div className="text-2xl font-bold text-yellow-600">{pendingTasks}</div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* 統計圖表 */}
+        {searchId && tasks.length > 0 && (
+          <div className="bg-white p-6 rounded-lg border shadow-sm">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart3 className="h-6 w-6 text-blue-600" />
+              <h2 className="text-xl font-semibold">任務統計圖表</h2>
+            </div>
+            <DeploymentChart tasks={tasks} />
           </div>
         )}
 
